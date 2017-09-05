@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+  <!-- Inherit from the light Material Theme -->
+  <style name="MyCustomTheme" parent="android:Theme.Material.Light">
+    <!-- Customizations go here -->
+    <item name="android:colorAccent">#FF9900</item> 
+  </style>
+</resources>
