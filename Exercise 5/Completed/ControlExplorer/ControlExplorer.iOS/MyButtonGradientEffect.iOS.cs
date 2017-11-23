@@ -25,16 +25,17 @@ namespace ControlExplorer.iOS
 			gradLayer?.RemoveFromSuperLayer ();
 		}
 
-		protected override void OnElementPropertyChanged(PropertyChangedEventArgs e)
-		{
-			base.OnElementPropertyChanged(e);
+        protected override void OnElementPropertyChanged(PropertyChangedEventArgs e)
+        {
+            base.OnElementPropertyChanged(e);
 
             if (Element is Button == false)
                 return;
 
-			if (e.PropertyName == ButtonGradientEffect.GradientColorProperty.PropertyName
+            if (e.PropertyName == ButtonGradientEffect.GradientColorProperty.PropertyName
+                || e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName
 			    || e.PropertyName == VisualElement.WidthProperty.PropertyName
-			   || e.PropertyName == VisualElement.HeightProperty.PropertyName)
+			    || e.PropertyName == VisualElement.HeightProperty.PropertyName)
 			{
 				SetGradient();
 			}
