@@ -43,7 +43,8 @@ namespace ControlExplorer.Droid
             if (Element is Button == false)
                 return;
 
-            if (args.PropertyName == ButtonGradientEffect.GradientColorProperty.PropertyName)
+            if (args.PropertyName == ButtonGradientEffect.GradientColorProperty.PropertyName
+                || args.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
                 SetGradient();
 		}
 	}

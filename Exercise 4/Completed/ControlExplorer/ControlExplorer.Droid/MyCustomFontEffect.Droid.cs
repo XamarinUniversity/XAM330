@@ -21,7 +21,7 @@ namespace CustomFont.Droid
 
             oldFont = label.Typeface;
 
-            var font = Typeface.CreateFromAsset(Forms.Context.Assets, "Pacifico.ttf"); 
+            var font = Typeface.CreateFromAsset(Android.App.Application.Assets, "Pacifico.ttf"); 
             label.Typeface = font;
         }
 
