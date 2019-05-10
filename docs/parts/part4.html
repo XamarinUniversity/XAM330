@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 4: Create a custom Effect (XAM330)</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>XAM330 Xamarin.Forms Renderers</header>
+
+    <section id="main">
+        <h2>Exercise 4: Create a custom Effect (XAM330)</h2>
+<p>In this exercise, you'll create a brand new gradient effect and apply it to a button.</p>
+<figure class="figure">
+<img src="./images/ex4_completed.png" alt="Screenshot of the completed exercise." class="exercise bordered" title="Completed exercise" />
+<figcaption class="figure-caption">Completed exercise</figcaption>
+</figure>
+<blockquote class="info-quote">To complete the exercise, you will need <a href="https://www.visualstudio.com/" target="_blank">Visual Studio for Windows or macOS</a> with the <a href="https://visualstudio.microsoft.com/xamarin/" target="_blank">Xamarin development tools</a> installed. You will also need either an emulator/simulator or a device to run the exercise on. Please see the <a href="https://docs.microsoft.com/xamarin/cross-platform/get-started/installation/" target="_blank">setup page</a> if you need help installing the Xamarin development environment.
+</blockquote>
+
+<hr>
+<h2>Open the starter solution</h2>
+<p>Open the starter solution from the <strong>Exercise 4</strong> &gt; <strong>Start</strong> folder in your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM330/">course materials</a> in either <strong>Visual Studio</strong> on Windows or <strong>Visual Studio for Mac</strong>.</p>
+
+<hr>
+<h2>Create the Android Effect</h2>
+<p>To create the Android effect, you'll add a new <code>PlatformEffect</code> class to the Android head project and override <strong>OnAttached</strong> and <strong>OnDetached</strong> to apply and remove the gradient.</p></p>
+<ol>
+<li>Add <strong>Gradient.Droid.cs</strong> to the Android head project.</li>
+<li>Create a new class named <strong>MyButtonGradientEffect</strong> in the Android project.</li>
+<li>Update the class to derive from <code>PlatformEffect</code>. You may need to add the <code>Xamarin.Forms.Platform.Android</code> using statement.</li>
+<li>Override the <code>OnAttached</code> and <code>OnDetached</code> methods.</li>
+<li>
+<p>Add a <code>Drawable</code> field named <strong>oldDrawable</strong>. You'll use this field to cache off the existing background.</p>
+<pre class="prettyprint-collapse"><code>using Xamarin.Forms;
+using Xamarin.Forms.Platform.Android;
+
+namespace ControlExplorer.Droid
+{
+    public class MyButtonGradientEffect : PlatformEffect
+    {
+        Drawable oldDrawable;
+
+        protected override void OnAttached()
+        {
+        }
+
+        protected override void OnDetached()
+        {
+        }
+    }
+}
+</code></pre>
+
+</li>
+<li>Create a new method named <strong>SetGradient</strong>.</li>
+<li>Cast the <code>Element</code> property to a Xamarin.Forms <code>Button</code> and save it to a local variable named <strong>xfButton</strong>.</li>
+<li>Read the <code>BackgroundColor</code> property of <strong>xfButton</strong> and save it to local variable named <strong>colorTop</strong>.</li>
+<li>Create another <code>Xamarin.Forms.Color</code> variable named <strong>colorBottom</strong> and set it to black.</li>
+<li>Call the static method <code>GetGradientDrawable</code> on the provided <code>Gradient</code> class, passing in both colors. You'll need to call <code>ToAndroid</code> to convert them from Xamarin.Forms colors to Android colors.</li>
+<li>
+<p>Call the <code>SetBackground</code> method on the <code>Control</code> property passing in the returned <code>Drawable</code> from <code>GetGradientColor</code>.</p>
+<pre class="prettyprint-collapse"><code>void SetGradient()
+{
+   var xfButton = Element as Xamarin.Forms.Button;
+
+   var colorTop    = xfButton.BackgroundColor;
+   var colorBottom = Xamarin.Forms.Color.Black;
+
+   var drawable = Gradient.GetGradientDrawable(colorTop.ToAndroid(), colorBottom.ToAndroid());
+
+   Control.SetBackground(drawable);
+}
+</code></pre>
+
+</li>
+<li>In <code>OnAttached</code> check if the <code>Element</code> property is a <code>Button</code>, if not return.</li>
+<li>Save the existing <code>Control.Background</code> <code>Drawable</code> to the <strong>oldDrawable</strong> field.</li>
+<li>Call <code>SetGradient</code>.</li>
+<li>
+<p>In <code>OnDetached</code>, check if <strong>oldDrawable</strong> is non-null, and if so, assign it to <code>Control.Background</code>.</p>
+<pre class="prettyprint-collapse"><code>protected override void OnAttached()
+{
+    if (Element is Button == false)
+        return;
+
+    oldDrawable = Control.Background;
+
+    SetGradient();
+}
+
+protected override void OnDetached()
+{
+    if (oldDrawable != null)
+        Control.Background = oldDrawable;
+}
+</code></pre>
+
+</li>
+<li>Use the <code>ResolutionGroupName</code> assembly attribute to set the group name to <strong>Xamarin</strong> (you only need to apply this attribute once per assembly, so if you already have it from a previous effect, you would not repeat it here).</li>
+<li>
+Use the <code>ExportEffect</code> assembly attribute to export the effect name as <strong>ButtonGradientEffect</strong>.
+<pre class="prettyprint-collapse"><code>[assembly: ResolutionGroupName (&quot;Xamarin&quot;)]
+[assembly: ExportEffect (typeof (MyButtonGradientEffect), &quot;ButtonGradientEffect&quot;)]
+</code></pre>
+
+</li>
+</ol>
+
+<hr>
+<h2>Create the iOS Effect</h2>
+<p>To create the iOS effect you'll follow very similar steps to those above for the Android effect, except you'll use the native iOS APIs. You'll add a new <code>PlatformEffect</code> class to the iOS head project and override OnAttached and OnDetached to apply and remove the gradient.</p>
+<ol>
+<li>Add the provided <strong>Gradient.iOS.cs</strong> file to the iOS head project.</li>
+<li>Create a new class named <strong>MyButtonGradientEffect</strong> in the iOS project.</li>
+<li>Update the class to derive from <code>PlatformEffect</code>. You may need to add the <code>Xamarin.Forms.Platform.iOS</code> using statement.</li>
+<li>Override the <code>OnAttached</code> and <code>OnDetached</code> methods.</li>
+<li>
+<p>Add a <code>CAGradientLayer</code> field named <strong>gradLayer</strong>. You'll use this field to cache your gradient.</p>
+<pre class="prettyprint-collapse"><code>using Xamarin.Forms;
+using Xamarin.Forms.Platform.iOS;
+using CoreAnimation;
+
+namespace ControlExplorer.iOS
+{
+    public class MyButtonGradientEffect : PlatformEffect
+    {
+        CAGradientLayer gradLayer;
+
+        protected override void OnAttached()
+        {
+        }
+
+        protected override void OnDetached()
+        {
+        }
+    }
+}
+</code></pre>
+
+</li>
+<li>Create a new method named <strong>SetGradient</strong>.</li>
+<li>In the new method, check if <strong>gradLayer</strong> is non-null, and if so, remove it using its <code>RemoveFromSuperLayer</code> method.</li>
+<li>Cast the <code>Element</code> property to a Xamarin.Forms <code>Button</code> and save it to a local variable named <strong>xfButton</strong>.</li>
+<li>Read the <code>BackgroundColor</code> property of <strong>xfButton</strong> and save it to local variable named <strong>colorTop</strong>.</li>
+<li>Create another <code>Color</code> variable named <strong>colorBottom</strong> and set it to <strong>black</strong>.</li>
+<li>Call the static method <code>GetGradientLayer</code> on the provided <code>Gradient</code> class, passing in both colors and <code>xfButton</code>'s width and height. You'll need to call <code>ToCGColor</code> to covert the colors from Xamarin.Forms colors to CGColors (this is an extension method, include a <code>using</code> statement for <code>Xamarin.Forms.Platform.iOS</code> to access it).</li>
+<li>
+<p>Insert the returned <code>CAGradientLayer</code> at position 0 of <code>Control.Layer</code>.</p>
+<pre class="prettyprint-collapse"><code>void SetGradient()
+{
+    gradLayer?.RemoveFromSuperLayer();
+
+    var xfButton = Element as Button;
+    var colorTop = xfButton.BackgroundColor;
+    var colorBottom = Color.Black;
+
+    gradLayer = Gradient.GetGradientLayer(colorTop.ToCGColor(), colorBottom.ToCGColor(), (float)xfButton.Width, (float)xfButton.Height);
+
+    Control.Layer.InsertSublayer(gradLayer, 0);
+}
+</code></pre>
+
+</li>
+<li>In <code>OnAttached</code> check if the <code>Element</code> property is a <code>Button</code>, if not return.</li>
+<li>Call <code>SetGradient</code>.</li>
+<li>
+<p>In <code>OnDetached</code>, check if <strong>gradLayer</strong> is non-null, and if so, remove it using its <code>RemoveFromSuperLayer</code> method.</p>
+<pre class="prettyprint-collapse"><code>protected override void OnAttached()
+{
+    if (Element is Button == false)
+        return;
+
+    SetGradient();
+}
+
+protected override void OnDetached()
+{
+    if(gradLayer != null)
+        gradLayer.RemoveFromSuperLayer ();
+}
+</code></pre>
+
+</li>
+<li>Use the <code>ResolutionGroupName</code> assembly attribute to set the group or company name to <strong>Xamarin</strong> (you only need to apply this attribute once per assembly, so if you already have it from a previous effect, you would not repeat it here).</li>
+<li>
+Use the <code>ExportEffect</code> assembly attribute to export the effect name as <strong>ButtonGradientEffect</strong>.
+<pre class="prettyprint-collapse"><code>[assembly: ResolutionGroupName (&quot;Xamarin&quot;)]
+[assembly: ExportEffect (typeof (MyButtonGradientEffect), &quot;ButtonGradientEffect&quot;)]
+</code></pre>
+
+</li>
+</ol>
+
+<hr>
+<h2>Create the UWP Effect</h2>
+<p>To create the Windows effects you'll add a new PlatformEffect class to the UWP project and override OnAttached and OnDetached to apply and remove the gradient.</p>
+<ol>
+<li>Add <strong>Gradient.UWP.cs</strong> to the UWP head project.</li>
+<li>Create a new class named <strong>MyButtonGradientEffect</strong> in the head project.</li>
+<li>Update the class to derive from <code>PlatformEffect</code>. You may need to add the <strong>Xamarin.Forms.Platform.UWP</strong> using statement.</li>
+<li>Override the <code>OnAttached</code> and <code>OnDetached</code> methods.</li>
+<li>
+<p>Add a <code>Brush</code> field named <strong>oldBrush</strong>. You'll use this field to save the original brush.</p>
+<pre class="prettyprint-collapse"><code>using Xamarin.Forms;
+using Xamarin.Forms.Platform.UWP;
+
+namespace ControlExplorer.UWP
+{
+    public class MyButtonGradientEffect : PlatformEffect
+    {
+        Brush oldBrush;
+
+        protected override void OnAttached()
+        {
+        }
+
+        protected override void OnDetached()
+        {
+        }
+    }
+}
+</code></pre>
+
+</li>
+<li>
+Create a new method named <strong>GetWindowsColor</strong> that accepts a <code>Color</code> parameter. This method will be used to covert Xamarin.Forms colors to Windows UI colors. The code is identical for all 3 Windows platforms (see below).
+<pre class="prettyprint"><code>Windows.UI.Color GetWindowsColor (Color color)
+{
+    return Windows.UI.Color.FromArgb((byte)(255 * color.A), (byte)(255 * color.R), (byte)(255 * color.G), (byte)(255 * color.B));
+}
+</code></pre>
+
+</li>
+<li>Create a new method named <strong>SetGradient</strong>.</li>
+<li>Cast the <code>Element</code> property to a Xamarin.Forms <code>Button</code> and save it to a local variable named <strong>xfButton</strong>.</li>
+<li>Cast the <code>Control</code> property to a <code>FormsButton</code> and save it to a local variable named <strong>button</strong>. This is a subclass of the native Windows button.</li>
+<li>Read the <code>BackgroundColor</code> property of <strong>xfButton</strong> and save it to local variable named <strong>colorTop</strong>.</li>
+<li>Create another <code>Color</code> variable named <strong>colorBottom</strong> and set it to black.</li>
+<li>Call the static method <code>GetGradientBrush</code> on the provided <code>Gradient</code> class, passing in both colors. You'll need to call <code>GetWindowsColor</code> to convert them from Xamarin.Forms colors to Windows colors.</li>
+<li>
+<p>Assign the returned <code>Brush</code> to the <code>BackgroundColor</code> property on <code>button</code>.</p>
+<pre class="prettyprint-collapse"><code>void SetGradient()
+{
+    var xfButton = Element as Button;
+
+    var button = Control as FormsButton;
+
+    var colorTop = xfButton.BackgroundColor;
+    var colorBottom = Color.Black;
+
+    button.BackgroundColor = Gradient.GetGradientBrush(GetWindowsColor(colorTop), GetWindowsColor(colorBottom));
+}
+</code></pre>
+
+</li>
+<li>In <code>OnAttached</code> check if the <code>Element</code> property is a <code>Button</code>, if not return.</li>
+<li>Cast <code>Control</code> to a <code>FormsButton</code> and save it to a local variable.</li>
+<li>Assign the <code>BackgroundColor</code> property of the <code>FormsBrush</code> to <strong>oldBrush</strong>.</li>
+<li>Call <code>SetGradient</code>.</li>
+<li>
+<p>In <code>OnDetached</code>, check if <strong>oldBrush</strong> is non-null, and if so, again cast <code>Control</code> to a <code>FormsButton</code> and assign <strong>oldBrush</strong> to its <code>BackgroundColor</code> property.</p>
+<pre class="prettyprint-collapse"><code>protected override void OnAttached()
+{
+    if (Element is Button == false)
+        return;
+
+    var button = Control as FormsButton;
+    oldBrush = button.BackgroundColor;
+
+    SetGradient();
+}
+
+protected override void OnDetached()
+{
+    if (oldBrush == null)
+        return;
+
+    var button = Control as FormsButton;
+    button.BackgroundColor = oldBrush;
+}
+</code></pre>
+
+</li>
+<li>Use the <code>ResolutionGroupName</code> assembly attribute to set the group or company name to <strong>Xamarin</strong> (you only need to apply this attribute once per assembly, so if you already have it from a previous effect, you would not repeat it here).</li>
+<li>
+Use the <code>ExportEffect</code> assembly attribute to export the effect name as <strong>ButtonGradientEffect</strong>.
+<pre class="prettyprint-collapse"><code>[assembly: ResolutionGroupName (&quot;Xamarin&quot;)]
+[assembly: ExportEffect (typeof (MyButtonGradientEffect), &quot;ButtonGradientEffect&quot;)]
+</code></pre>
+
+</li>
+</ol>
+
+<hr>
+<h2>Create a RoutingEffect</h2>
+<p>Create a <code>RoutingEffect</code> class in the <strong>ControlExplorer</strong> PCL named <strong>ButtonGradientEffect</strong>. Refer to the previous exercise if you need help creating the RoutingEffect.</p>
+<pre class="prettyprint-collapse"><code>public class ButtonGradientEffect : RoutingEffect
+{
+    public ButtonGradientEffect () : base (&quot;Xamarin.ButtonGradientEffect&quot;)
+    {}
+}
+</code></pre>
+
+
+<hr>
+<h2>Use the Gradient Effect</h2>
+<p>You'll apply the effect programmatically in preparation for the next exercise. Remember that the iOS effect needed the width and height of the button to create the gradient layer. Because of this, you need to ensure the visual tree has been rendered before applying the effect so you'll use one of the ContentPage lifecycle methods.</p>
+<ol>
+<li>Open <strong>MainPage.xaml.cs</strong> in the PCL.</li>
+<li>Override <code>OnAppearing</code>.</li>
+<li>
+<p>In the method, apply the effect by instantiating an instance of <code>ButtonGradientEffect</code> and adding it to <strong>buttonClick</strong>'s <code>Effects</code> collection.</p>
+<pre class="prettyprint-collapse"><code>public partial class MainPage : ContentPage
+{
+    ...
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        buttonClick.Effects.Add(new ButtonGradientEffect());
+    }
+</code></pre>
+
+</li>
+</ol>
+
+<hr>
+<h2>Exercise summary</h2>
+<p>In this exercise you created a custom effect in each platform-specific project to display a gradient background onto a button.</p>
+<p>You can view the completed solution in the <strong>Exercise 4</strong> &gt; <strong>Completed</strong> folder of your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM330/">course materials</a>.</p>
+
+
+        <div class="align-right">
+            <a href="../StartHere.html">Go Back</a>
+        </div>
+
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/jquery.imagemapster.min.js"></script>
+    <script src="./res/js/imagemap.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft. All rights reserved.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+
+</body>
+</html>

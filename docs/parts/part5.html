@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 5: Add an attached property (XAM330)</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>XAM330 Xamarin.Forms Renderers</header>
+
+    <section id="main">
+        <h2>Exercise 5: Add an attached property (XAM330)</h2>
+<p>In this exercise, you'll add an attached property to set the second color of your gradient effect.</p>
+<figure class="figure">
+<img src="./images/ex5_completed.png" alt="Screenshot of the completed exercise." class="exercise bordered" title="Completed exercise" />
+<figcaption class="figure-caption">Completed exercise</figcaption>
+</figure>
+<blockquote class="info-quote">To complete the exercise, you will need <a href="https://www.visualstudio.com/" target="_blank">Visual Studio for Windows or macOS</a> with the <a href="https://visualstudio.microsoft.com/xamarin/" target="_blank">Xamarin development tools</a> installed. You will also need either an emulator/simulator or a device to run the exercise on. Please see the <a href="https://docs.microsoft.com/xamarin/cross-platform/get-started/installation/" target="_blank">setup page</a> if you need help installing the Xamarin development environment.
+</blockquote>
+
+<hr>
+<h2>Open the starter solution</h2>
+<p>Open the starter solution from the <strong>Exercise 5</strong> &gt; <strong>Start</strong> folder in your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM330/">course materials</a> in either <strong>Visual Studio</strong> on Windows or <strong>Visual Studio for Mac</strong>.</p>
+
+<hr>
+<h2>Add an Attached Property</h2>
+<ol>
+<li>Open <strong>ButtonGradientEffect.cs</strong> in the <strong>ControlExplorer</strong> PCL project.</li>
+<li>Add a <code>public static readonly BindableProperty</code> named <strong>GradientColorProperty</strong>.</li>
+<li>
+Assign <strong>GradientColorProperty</strong> using the static <code>BindableProperty.CreateAttached</code> method: set the property name to <strong>&quot;GradientColor&quot;</strong>, the type to <code>Color</code>, the declaring type to <code>ButtonGradientEffect</code> and the default value to black.
+<pre class="prettyprint-collapse"><code>public class ButtonGradientEffect : RoutingEffect
+{
+    public static readonly BindableProperty GradientColorProperty = BindableProperty.CreateAttached(&quot;GradientColor&quot;, typeof(Color), typeof(ButtonGradientEffect), Color.Black);
+    ...
+}
+</code></pre>
+
+</li>
+<li>Add a <code>public static void</code> setter method named <strong>SetGradientColor</strong> that accepts a <code>VisualElement</code> and a <code>Color</code>.</li>
+<li>Within the setter method, call the <code>SetValue</code> method on the passed-in <code>VisualElement</code>. The parameters are the <code>BindableProperty</code> and the passed in <code>Color</code>.</li>
+<li>Add a <code>public static Color</code> getter method named <strong>GetGradientColor</strong> that accepts a <code>VisualElement</code>.</li>
+<li>
+<p>Within the getter method, call the <code>VisualElement</code>'s <code>GetValue</code> method, passing in the <code>BindableProperty</code>. Cast the return value to a <code>Color</code> and return it.</p>
+<pre class="prettyprint-collapse"><code>public static void SetGradientColor(VisualElement view, Color color)
+{
+    view.SetValue(GradientColorProperty, color);
+}
+
+public static Color GetGradientColor(VisualElement view)
+{
+    return (Color) view.GetValue(GradientColorProperty);
+}
+</code></pre>
+
+</li>
+</ol>
+
+<hr>
+<h2>Set the Attached Property</h2>
+<p>You'll use the existing slider to adjust the second color of the button's gradient. When the slider position changes, you'll create a color and assign it to the button via the attached property.</p>
+<ol>
+<li>Open <strong>MainPage.xaml.cs</strong> and find the <code>OnSliderColorValueChanged</code> method.</li>
+<li>Use the slider position to generate a color. The slider has been configured with Min/Max values of 0 and 255 which can be read using the passed in <code>ValueChangedEventArgs</code>'s <code>NewValue</code> property. Generate a grey <code>Color</code> by using <code>NewValue</code> for the RGB color values.</li>
+<li>
+Set the new color as the gradient color attached property onto the button named <strong>buttonClick</strong>. Use the static <code>ButtonGradientEffect.SetGradientColor</code> method.
+<pre class="prettyprint-collapse"><code>private void OnSliderColorValueChanged(object sender, ValueChangedEventArgs e)
+{
+    Color gradColor = new Color(e.NewValue / 255.0, e.NewValue / 255.0, e.NewValue / 255.0);
+    ButtonGradientEffect.SetGradientColor(buttonClick, gradColor);
+}
+</code></pre>
+
+</li>
+</ol>
+
+<hr>
+<h2>Read the Attached Property</h2>
+<p>The steps below are the same for each head project. Complete the steps below for each platform you wish to support.</p>
+<ol>
+<li>Open <strong>MyButtonGradientEffect</strong> in the head project and find the <code>SetGradient</code> method.</li>
+<li>
+Update the <strong>colorBottom</strong> assignment to read the attached property by calling the <code>static</code> <code>ButtonGradientEffect.GetGradientColor</code> method. Remember, the property is attached to the button defined in Xamarin.Forms, so pass in <strong>xfButton</strong>.
+<pre class="prettyprint-collapse"><code>void SetGradient()
+{
+    ....
+    var colorBottom = ButtonGradientEffect.GetGradientColor(xfButton);
+}
+</code></pre>
+
+</li>
+<li>You also need to respond to property changes: override <code>OnElementPropertyChanged</code>.</li>
+<li>Within the method, check if the <code>Element</code> property is a <code>Button</code>; if it is not, return.</li>
+<li>Next check for updates to the attached property by comparing the <code>PropertyName</code> property on the passed in <code>PropertyChangedEventArgs</code>. You can use the <strong>PropertyName</strong> property on <strong>GradientColorProperty</strong> to compare.</li>
+<li>
+<p>If <code>PropertyName</code> matches your gradient property, call <code>SetGradient</code>.</p>
+<pre class="prettyprint-collapse"><code>protected override void OnElementPropertyChanged(PropertyChangedEventArgs e)
+{
+    base.OnElementPropertyChanged(e);
+
+    if (Element is Button == false)
+        return;
+
+    if (e.PropertyName == ButtonGradientEffect.GradientColorProperty.PropertyName)
+        SetGradient();
+}
+</code></pre>
+
+</li>
+<li>Run the application and move the slider, the bottom color of the gradient on the button should change from black to white.</li>
+</ol>
+
+<hr>
+<h2>Bonus: Respond to background color changes</h2>
+<p>You're only responding when the added gradient color changes but the gradient also uses the Button's background color. Update <code>OnElementPropertyChanged</code> in each effect to also respond when the background color is changed.</p>
+
+<hr>
+<h2>Bonus: Respond to size changes in iOS</h2>
+<p>On iOS, you created a gradient layer with a fixed width and height. You can use <strong>OnElementPropertyChanged</strong> to respond to size changes on the element.</p>
+<ol>
+<li>Open <strong>MyButtonGradientEffect</strong> in the iOS head project.</li>
+<li>
+<p>In <code>OnElementPropertyChanged</code>, call <code>SetGradient</code> if <code>e.PropertyName</code> matches <code>VisualElement.WidthProperty</code> or <code>VisualElement.HeightProperty</code>.</p>
+<pre class="prettyprint-collapse"><code>protected override void OnElementPropertyChanged(PropertyChangedEventArgs e)
+{
+    ...
+
+    if (e.PropertyName == ButtonGradientEffect.GradientColorProperty.PropertyName
+     || e.PropertyName == VisualElement.WidthProperty.PropertyName
+     || e.PropertyName == VisualElement.HeightProperty.PropertyName)
+    {
+        SetGradient();
+    }
+}
+</code></pre>
+
+</li>
+</ol>
+
+<hr>
+<h2>Exercise summary</h2>
+<p>In this exercise you defined an attached property to store a color. You attached and updated the property to a Xamarin.Forms button. You then read and used the color property to update the gradient in each platform-specific project.</p>
+<p>You can view the completed solution in the <strong>Exercise 5</strong> &gt; <strong>Completed</strong> folder of your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM330/">course materials</a>.</p>
+
+
+        <div class="align-right">
+            <a href="../StartHere.html">Go Back</a>
+        </div>
+
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/jquery.imagemapster.min.js"></script>
+    <script src="./res/js/imagemap.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft. All rights reserved.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+
+</body>
+</html>
