@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 1: Use platform-specific themes (XAM330)</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>XAM330 Xamarin.Forms Renderers</header>
+
+    <section id="main">
+        <h2>Exercise 1: Use platform-specific themes (XAM330)</h2>
+<p>In this exercise, you'll use platform themes to customize our application's appearance.</p>
+<figure class="figure">
+<img src="./images/ex1_completed.png" alt="Screenshot of the completed exercise." class="exercise portrait bordered" title="Completed exercise" />
+<figcaption class="figure-caption">Completed exercise</figcaption>
+</figure>
+<blockquote class="info-quote">To complete the exercise, you will need <a href="https://www.visualstudio.com/" target="_blank">Visual Studio for Windows or macOS</a> with the <a href="https://visualstudio.microsoft.com/xamarin/" target="_blank">Xamarin development tools</a> installed. You will also need either an emulator/simulator or a device to run the exercise on. Please see the <a href="https://docs.microsoft.com/xamarin/cross-platform/get-started/installation/" target="_blank">setup page</a> if you need help installing the Xamarin development environment.
+</blockquote>
+
+<hr>
+<h2>Open the starter solution</h2>
+<p>Open the starter solution from the <strong>Exercise 1</strong> &gt; <strong>Start</strong> folder in your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM330/">course materials</a> in either <strong>Visual Studio</strong> on Windows or <strong>Visual Studio for Mac</strong>.</p>
+
+<hr>
+<h2>Use the iOS Appearance API</h2>
+<ol>
+<li>Build and run the iOS head-project and inspect the UI.</li>
+<li>Open <strong>AppDelegate.cs</strong> in the iOS project and go to the <strong>FinishedLaunching</strong> method.</li>
+<li>Change the color of the switch in the iOS app by setting the static <code>UISwitch.Appearance.OnTintColor</code> property.</li>
+<li>Change the color of the slider's bar by setting the static <code>UISlider.Appearance.MinimumTrackTintColor</code> and <code>UISlider.Appearance.MaximumTrackTintColor</code> properties.</li>
+<li>Run the application on iOS and inspect the color changes.</li>
+</ol>
+
+<hr>
+<h2>Create a custom Android theme</h2>
+<p>In this exercise, you'll use the Android material design themes. These are supported in Android 5.0 and above. To see the theme changes, you'll need an emulator or device running Android 5.0 (Lollipop) or newer.</p>
+<ol>
+<li>Build and run the Android head-project and inspect the UI.</li>
+<li>Open <strong>MainActivity.cs</strong> in the Android project.</li>
+<li>
+Change the theme to <strong>Material.Light</strong> in the activity attribute.
+<pre class="prettyprint"><code>[Activity(Label = &quot;ControlExplorer&quot;, Icon = &quot;@drawable/icon&quot;, Theme = &quot;@android:style/Theme.Material.Light&quot;, MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+</code></pre>
+
+</li>
+<li>Run the Android head-project and observe the visual changes, the background should be light or white.</li>
+<li>Add a new subfolder in the Android project under the <strong>Resources</strong> folder named <strong>values-v21</strong>.</li>
+<li>Add a new <strong>xml</strong> file to the folder named <strong>styles.xml</strong>.</li>
+<li>
+Add the contents below to create a theme that derives from <strong>Material.Light</strong> and customizes the <strong>accent color.</strong>
+<pre class="prettyprint"><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+&lt;resources&gt;
+   &lt;style name=&quot;MyCustomTheme&quot; parent=&quot;android:Theme.Material.Light&quot;&gt;
+      &lt;item name=&quot;android:colorAccent&quot;&gt;#FF9900&lt;/item&gt;
+   &lt;/style&gt;
+&lt;/resources&gt;
+</code></pre>
+
+</li>
+<li>
+Update the activity attribute in <strong>MainActivity.cs</strong> to load your custom theme and run the application.
+<pre class="prettyprint"><code>[Activity(Label = &quot;ControlExplorer&quot;, Icon = &quot;@drawable/icon&quot;, Theme = &quot;@style/MyCustomTheme&quot;, MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+</code></pre>
+
+</li>
+</ol>
+
+<hr>
+<h2>Use implicit styles in Windows</h2>
+<ol>
+<li>If you're using Visual Studio for Windows, build and run the Windows head-project and inspect the UI.</li>
+<li>Open <strong>App.xaml</strong>.</li>
+<li>Add an <code>Application.Resources</code> section.</li>
+<li>Add an implicit <code>Style</code> targeting <code>Slider</code>.</li>
+<li>Add two setters to the <code>Style</code>. One with a <code>Property</code> for <strong>Background</strong> and the other for <strong>Foreground</strong>. Select colors for each.</li>
+<li>
+<p>Run the application.</p>
+<pre class="prettyprint-collapse"><code>&lt;Application.Resources&gt;
+    &lt;ResourceDictionary&gt;
+        &lt;Style TargetType=&quot;Slider&quot;&gt;
+            &lt;Setter Property=&quot;Background&quot; Value=&quot;Purple&quot; /&gt;
+            &lt;Setter Property=&quot;Foreground&quot; Value=&quot;Red&quot; /&gt;
+        &lt;/Style&gt;
+    &lt;ResourceDictionary&gt;
+&lt;/Application.Resources&gt;
+</code></pre>
+
+</li>
+</ol>
+
+<hr>
+<h2>Exercise summary</h2>
+<p>In this exercise you used the platform-specific themes to customize the appearance of controls defined in Xamarin.Forms.</p>
+<p>You can view the completed solution in the <strong>Exercise 1</strong> &gt; <strong>Completed</strong> folder of your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM330/">course materials</a>.</p>
+
+
+        <div class="align-right">
+            <a href="../StartHere.html">Go Back</a>
+        </div>
+
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/jquery.imagemapster.min.js"></script>
+    <script src="./res/js/imagemap.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft. All rights reserved.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+
+</body>
+</html>

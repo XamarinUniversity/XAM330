@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 2: Add and use an existing Effect (XAM330)</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>XAM330 Xamarin.Forms Renderers</header>
+
+    <section id="main">
+        <h2>Exercise 2: Add and use an existing Effect (XAM330)</h2>
+<p>In this exercise, you'll use a provided custom font effect and apply it to a Xamarin.Forms label.</p>
+<figure class="figure">
+<img src="./images/ex2_completed.png" alt="Screenshot of the completed exercise." class="exercise bordered" title="Completed exercise" />
+<figcaption class="figure-caption">Completed exercise</figcaption>
+</figure>
+<blockquote class="info-quote">To complete the exercise, you will need <a href="https://www.visualstudio.com/" target="_blank">Visual Studio for Windows or macOS</a> with the <a href="https://visualstudio.microsoft.com/xamarin/" target="_blank">Xamarin development tools</a> installed. You will also need either an emulator/simulator or a device to run the exercise on. Please see the <a href="https://docs.microsoft.com/xamarin/cross-platform/get-started/installation/" target="_blank">setup page</a> if you need help installing the Xamarin development environment.
+</blockquote>
+
+<hr>
+<h2>Open the starter solution</h2>
+<p>This exercise is a continuation of the previous exercise. You can use your existing solution or begin from the prior <strong>Exercise 1 &gt; Completed</strong> solution in your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM330/">course materials</a>.</p>
+
+<hr>
+<h2>Add the Effect and font</h2>
+<p>The <strong>Assets</strong> folder contains a platform-specific custom font effect for each platform. This effect is designed to be applied to a Xamarin.Forms Label.</p>
+<ol>
+<li>Add the appropriate CustomFontEffect source file to each platform-specific project.</li>
+<li>
+Add the provided <strong>Pacifico.ttf</strong> font to each head project:
+<ul>
+<li>iOS: Add it to the <strong>Resources</strong> folder. The Build Action should be <strong>BundleResource</strong>.</li>
+<li>Android: Add it to the <strong>Assets</strong> folder. The Build Action should be <strong>AndroidAsset</strong>.</li>
+<li>Windows: Add it to the <strong>Assets</strong> folder. The Build Action should be <strong>Content</strong>.</li>
+</ul>
+</li>
+<li>
+For <strong>iOS</strong> only: update the <strong>Info.plist</strong> to include the font.
+<ul>
+<li>In Visual Studio for Mac, double-click on <strong>Info.plist</strong> and change the view to <strong>Source</strong> via the tabs at the bottom. Add a new entry by right-clicking and selecting <strong>New key</strong>. Change the Property to <strong>Fonts provided by application</strong>. Under the new entry add a string with the value <strong>Pacifico.ttf</strong>.</li>
+<li>
+In Visual Studio on Windows, you'll need to edit the <strong>Info.plist</strong> file manually: right-click and select <strong>Open with...</strong>, from the provided options select <strong>XML (Text) Editor</strong> and add the following xml:
+<pre class="prettyprint"><code>&lt;key&gt;UIAppFonts&lt;/key&gt;
+&lt;array&gt;
+   &lt;string&gt;Pacifico.ttf&lt;/string&gt;
+&lt;/array&gt;
+</code></pre>
+
+</li>
+</ul>
+</li>
+</ol>
+
+<hr>
+<h2>Resolve the Effect</h2>
+<ol>
+<li>Open <strong>MainPage.xaml.cs</strong> in the <strong>ControlExplorer</strong> PCL project.</li>
+<li>Create an <code>Effect</code> field named <strong>fontEffect</strong>.</li>
+<li>
+<p>In the constructor, use the ID of the custom font effect (<strong>&quot;Xamarin.CustomFontEffect&quot;</strong>) to resolve the <code>Effect</code>. Assign the resolved <code>Effect</code> to the <strong>fontEffect</strong> field.</p>
+<pre class="prettyprint-collapse"><code>public partial class MainPage : ContentPage
+{
+    Effect fontEffect;
+
+    public MainPage()
+    {
+        InitializeComponent();
+
+        fontEffect = Effect.Resolve(&quot;Xamarin.CustomFontEffect&quot;);
+    }
+}
+</code></pre>
+
+</li>
+</ol>
+
+<hr>
+<h2>Apply the Effect</h2>
+<ol>
+<li>Examine the code in <strong>MainPage.xaml</strong>, notice there is a <code>Label</code> named <strong>labelWelcome</strong>.</li>
+<li>Return to the constructor in <strong>MainPage.xaml.cs</strong>.</li>
+<li>Add <strong>fontEffect</strong> to <strong>labelWelcome</strong> using the <code>Add</code> method on <strong>labelWelcome</strong>'s <code>Effects</code> property.</li>
+<li>
+Run the application on any platform; you should see the custom font on the label showing the text &quot;Welcome to Effects!&quot;.
+<pre class="prettyprint-collapse"><code>public MainPage()
+{
+    ...
+    fontEffect = Effect.Resolve(&quot;Xamarin.CustomFontEffect&quot;);
+    labelWelcome.Effects.Add(fontEffect);
+}
+</code></pre>
+
+</li>
+</ol>
+
+<hr>
+<h2>Toggle the effect on/off</h2>
+<p>Next you'll use the switch to turn the effect on and off.</p>
+<ol>
+<li>Go to the <code>OnSwitchToggled</code> method in <strong>MainPage.xaml.cs</strong>.</li>
+<li>
+<p>Check <strong>switchEffects</strong>' <code>IsToggled</code> property and add/remove the effect depending on the switch's state. A possible solution is shown below.</p>
+<pre class="prettyprint-collapse"><code>private void OnSwitchToggled(object sender, ToggledEventArgs e)
+{
+    labelWelcome.Effects.Remove(fontEffect);
+
+    if(switchEffects.IsToggled)
+        labelWelcome.Effects.Add(fontEffect);
+}
+</code></pre>
+
+</li>
+</ol>
+
+<hr>
+<h2>Exercise summary</h2>
+<p>In this exercise you added a provided Effect that uses platform-specific APIs to apply a custom font to a Xamarin.Forms label.</p>
+<p>You can view the completed solution in the <strong>Exercise 2</strong> &gt; <strong>Completed</strong> folder of your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM330/">course materials</a>.</p>
+
+
+        <div class="align-right">
+            <a href="../StartHere.html">Go Back</a>
+        </div>
+
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/jquery.imagemapster.min.js"></script>
+    <script src="./res/js/imagemap.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft. All rights reserved.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+
+</body>
+</html>
